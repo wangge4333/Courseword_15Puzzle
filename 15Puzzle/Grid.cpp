@@ -18,6 +18,8 @@ Grid::Grid() :blank_one(nullptr) {
 		all_grid[i] = new Block[length];
 		all_grid[i]->set_number(0);
 	}
+
+	initialize_direct();
 }
 
 void Grid::set_value(vector<int> grids_value) {

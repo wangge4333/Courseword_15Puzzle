@@ -18,8 +18,6 @@ int main()
 		grids[i].set_value(text_handle->get_vectors()[i]);
 	}
 		
-	
-
 
 	while (order != "C")
 	{
@@ -28,6 +26,13 @@ int main()
 		cin >> order;
 		if (order[0] == 'I') {
 			while (text_handle->input_new_grid() == false) {};
+
+			delete[] grids;
+			grids = new Grid[text_handle->get_grid_number()];
+			for (int i = 0; i < text_handle->get_grid_number(); i++) {
+				grids[i].set_value(text_handle->get_vectors()[i]);
+			}
+
 			cout << endl;
 		}
 		if (order[0] == 'S') {
@@ -36,9 +41,8 @@ int main()
 			cout << endl;
 		}
 	}
-	
-
 }
+
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu

@@ -71,11 +71,11 @@ void TextHandle::split_string() {
 			}
 			if (counter == 15) {
 				content_backup.erase(0, end_number);
-				j = 0;
+				end_number = 0;
 				counter = 0;
 				break;
 			}
-				
+
 		}
 }
 
@@ -83,7 +83,7 @@ bool TextHandle::input_new_grid() {
 	string new_grid_string = "";
 	string temp = "";
 
-	cout << "Input a new grid in a correct form, 15 numbers in 1~20, no two of them can be same. " << endl;
+	cout << "\nInput a new grid in a correct form, 15 numbers in 1~20, no two of them can be same. " << endl;
 	cout << "Use ',' to divide every number. " << endl;
 	for (int i = 0; i < 4; i++) {
 		cout << "now input the row " << i + 1 << ". " << endl;
@@ -168,7 +168,10 @@ void TextHandle::write_in_file() {
 		text += "\n\n";
 	}
 		
+	//show all in file
+	cout << "Now text in file is " << endl;
 	cout << text << endl;
+
 	ofstream writeFile;
 	writeFile.open(fileAddress);
 	writeFile << text;
