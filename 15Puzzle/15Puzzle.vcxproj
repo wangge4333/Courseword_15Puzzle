@@ -155,11 +155,15 @@
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="Grid.cpp" />
     <ClCompile Include="TextHandle.cpp" />
+    <ClCompile Include="TextHandle4.cpp" />
+    <ClCompile Include="TextHandle9.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Block.h" />
     <ClInclude Include="Grid.h" />
     <ClInclude Include="TextHandle.h" />
+    <ClInclude Include="TextHandle4.h" />
+    <ClInclude Include="TextHandle9.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

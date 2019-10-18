@@ -1,6 +1,11 @@
 #include "TextHandle.h"
 
-TextHandle::TextHandle() :text_content(""), number_of_grid(0),fileAddress("") {
+TextHandle::TextHandle() :text_content(""), number_of_grid(0), fileAddress(""), grid_length(4) {
+	get_info_from_text();
+	split_string();
+}
+
+TextHandle::TextHandle(int length) : text_content(""), number_of_grid(0), fileAddress(""), grid_length(length) {
 	get_info_from_text();
 	split_string();
 }
@@ -10,6 +15,7 @@ void TextHandle::get_info_from_text() {
 	ostringstream buf;
 	char temp;
 	readFile.open("");
+	
 	while (!readFile) {
 		cout << "Input the file's address, use \\\\ rather than \\ to seperate the folders. " << endl;
 		cin >> fileAddress;
@@ -25,6 +31,8 @@ void TextHandle::get_info_from_text() {
 	{
 		buf.put(temp);
 	}
+
+	readFile.close();
 	text_content = buf.str();
 
 	set_grid_number();
@@ -44,8 +52,9 @@ void TextHandle::set_grid_number() {
 	}
 	text_content.erase(0, end_number);
 
-	if(number_of_grid!=0)
-		grids = new vector<int>[number_of_grid];
+	
+
+	grids = new vector<int>[number_of_grid];
 	
 }
 
@@ -54,6 +63,7 @@ void TextHandle::split_string() {
 		return;
 
 	string content_backup = text_content;
+
 	string temp = "";
 	int counter = 0, end_number = 0;
 	for (int i = 0; i < number_of_grid; i++)
@@ -69,7 +79,7 @@ void TextHandle::split_string() {
 				}
 				temp = "";
 			}
-			if (counter == 15) {
+			if (counter == grid_length * grid_length - 1) {
 				content_backup.erase(0, end_number);
 				end_number = 0;
 				counter = 0;
@@ -85,7 +95,8 @@ bool TextHandle::input_new_grid() {
 
 	cout << "\nInput a new grid in a correct form, 15 numbers in 1~20, no two of them can be same. " << endl;
 	cout << "Use ',' to divide every number. " << endl;
-	for (int i = 0; i < 4; i++) {
+
+	for (int i = 0; i < grid_length; i++) {
 		cout << "now input the row " << i + 1 << ". " << endl;
 		cin >> temp;
 		new_grid_string += temp;
@@ -108,18 +119,18 @@ bool TextHandle::input_new_grid() {
 			}
 			temp = "";
 		}
-		if (counter == 15) {
+		if (counter == grid_length * grid_length - 1) {
 			break;
 		}
 	}
 
-	if (counter < 15) {
+	if (counter < grid_length * grid_length - 1) {
 		cout << "Illegal grid form, input again. " << endl;
 		return false;
 	}
 
-	for(int i=0;i<14;i++)
-		for (int j = i + 1; j < 15; j++)
+	for(int i=0;i< grid_length * grid_length - 2;i++)
+		for (int j = i + 1; j < grid_length * grid_length - 1; j++)
 			if (new_grid[i] == new_grid[j] || new_grid[i] > 20 || new_grid[i] < 0) {
 				cout << "You can't input 2 same number in a matrix, or any number not in legal area. " << endl;
 				return false;
@@ -158,9 +169,9 @@ void TextHandle::write_in_file() {
 	text += '\n';
 
 	for (int i = 0; i < number_of_grid; i++) {
-		for (int j = 0; j < 15; j++) {
+		for (int j = 0; j < grid_length * grid_length - 1; j++) {
 			text += to_string(grids[i][j]);
-			if ((j % 4) == 3)
+			if ((j % grid_length) == grid_length - 1)
 				text += '\n';
 			else
 				text += ' ';
@@ -175,18 +186,19 @@ void TextHandle::write_in_file() {
 	ofstream writeFile;
 	writeFile.open(fileAddress);
 	writeFile << text;
+	writeFile.close();
 }
 
-void TextHandle::show_all_grids() {
-	cout << number_of_grid << " matrixes exist. " << endl;
-
-	for (int i = 0; i < number_of_grid; i++) {
-		for (int j = 0; j < 15; j++) {
-			if ((j % 4) == 3 || j == 14)
-				cout << grids[i][j] << '\n';
-			else
-				cout << grids[i][j] << ' ';
-		}
-		cout << endl;
-	}
-}
+//void TextHandle::show_all_grids() {
+//	cout << number_of_grid << " matrixes exist. " << endl;
+//
+//	for (int i = 0; i < number_of_grid; i++) {
+//		for (int j = 0; j < 15; j++) {
+//			if ((j % 4) == 3 || j == 14)
+//				cout << grids[i][j] << '\n';
+//			else
+//				cout << grids[i][j] << ' ';
+//		}
+//		cout << endl;
+//	}
+//}

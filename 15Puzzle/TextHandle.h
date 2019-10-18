@@ -10,6 +10,7 @@ using namespace std;
 class TextHandle
 {
 protected:
+	int grid_length = 4;
 	string fileAddress;
 	string text_content;
 	int number_of_grid;
@@ -18,21 +19,23 @@ protected:
 
 public:
 	TextHandle();
-	~TextHandle() {};
+	TextHandle(int length);
+	virtual ~TextHandle() {};
 
 	//Import matrix from files
-	void get_info_from_text();
-	int get_grid_number() { return number_of_grid; };
-	void split_string();
+	virtual void get_info_from_text();
+	virtual int get_grid_number() { return number_of_grid; };
+	virtual void split_string();
 
 	//Input matrix manually
 	//void check_grid_number();
-	bool input_new_grid();
-	void write_in_file();
+	virtual bool input_new_grid();
+	virtual void write_in_file();
 
 	//Others
-	void show_all_grids();
+	//void show_all_grids();
 	vector<int>* get_vectors() { return grids; };
+	int get_length() { return grid_length; };
 
 };
 
