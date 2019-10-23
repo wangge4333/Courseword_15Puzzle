@@ -92,12 +92,16 @@ bool TextHandle::split_string() {
 		if (grids[i].size() != grid_length * grid_length - 1)
 			return false;
 
-	//check repeative number
+	//check repeative number or number exceed the area
 	for (int i = 0; i < number_of_grid; i++)
-		for (int j = 0; j < grids[i].size() - 1; j++)
+		for (int j = 0; j < grids[i].size() - 1; j++) {
+			if (grids[i][j]<1 || grids[i][j]>grid_length * (grid_length + 1))
+				return false;
 			for (int x = j + 1; x < grids[i].size(); x++)
 				if (grids[i][j] == grids[i][x] || grids[i][j] == 0)
 					return false;
+		}
+			
 
 	return true;
 }
@@ -192,22 +196,22 @@ void TextHandle::write_in_file() {
 		text += "\n\n";
 	}
 		
-	//show all in file
-	cout << "Now text in file is " << endl;
-	cout << text << endl;
 
 	ofstream writeFile;
 	writeFile.open(fileAddress);
 	writeFile << text;
 	writeFile.close();
+
+	cout << "New matrix successfully created." << endl;
 }
 
 bool TextHandle::random_create() {
 	vector<int> new_grid;
 	int counter = 0;
 
-	default_random_engine random_num;
-	uniform_int_distribution<signed> random_num_dis(1, 20);
+	random_device rd;
+	default_random_engine random_num(rd());
+	uniform_int_distribution<int> random_num_dis(1, 20);
 
 	for (counter = 0; counter < grid_length * grid_length - 1;) {
 		int temp = random_num_dis(random_num);

@@ -1,5 +1,5 @@
 // 15Puzzle.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+// Done by Ge Wang, Student ID 190082628
 
 #include <iostream>
 #include "TextHandle.h"
@@ -16,28 +16,14 @@
 
 using namespace std;
 
-void moveBlock(Grid& grid, int original_direction);
+//void moveBlock(Grid& grid, int original_direction); has been abandoned
 void moveBlockBFS(Grid& grid);
 string get_result_str(Grid& grid);
-unsigned long long check_continuous_row(unsigned long long partial);
-unsigned long long compute_continuous(Grid& grid, unsigned long long partial);
-unsigned long long check_continuous_c(Grid& grid, unsigned long long partial);
+unsigned long long check_continuous_row(unsigned long long partial);				//for 3x3 or 2x2 matrix
+unsigned long long compute_continuous(Grid& grid, unsigned long long partial);		//for 4x4 or over matrix
+unsigned long long check_continuous_c(Grid& grid, unsigned long long partial);		//only check the current matrix
 void bubbleSort(vector<int>& SplitedInt);
 string lltos(long long t);
-
-//these for matrix under 4x4
-unsigned long long continuous_row = 0;
-unsigned long long continuous_column = 0;
-unsigned long long reversed_c_row = 0;
-unsigned long long reversed_c_column = 0;
-
-unsigned long long tot_r_c_this = 0;
-unsigned long long tot_r_c_all = 0;
-
-int num = 0;
-int r_num = 0;
-
-
 
 unordered_map<string, Grid> grid_map;
 unordered_map<string, Grid> reachedgrid_map;
@@ -56,8 +42,7 @@ int main()
 
 	while (order[0] != 'E') {
 		order = "";
-		system("cls");
-		cout << "What length of matrices do you want to use?" << endl;
+		cout << "What length of matrices do you want to use? Input E to exit the program. " << endl;
 		cout << "Input 2 for 2x2, 3 for 3x3, 4 for 4x4." << endl;
 		if (text_handle != nullptr) {
 			delete text_handle;
@@ -85,7 +70,8 @@ int main()
 		}
 
 		if (!text_handle->is_file_valid) {
-			cout << "Wrong file format or repeative number in matrix.\nCheck and Input again." << endl;
+			system("cls");
+			cout << "Wrong file format or illegal number in matrix.\nCheck and Input again." << endl;
 			continue;
 		}
 		
@@ -103,11 +89,11 @@ int main()
 
 		//2nd level menu
 		while (order[0] != 'C') {
-			cout << "Input Q to create a new matrices. " << endl;
+			cout << "Input Q to create a new matrix. " << endl;
 			cout << "Input W to create new matrices randomly." << endl;
 			cout << "Input E to show any matrix(es)." << endl;
 			cout << "Input R to get the number of continuous row(and partial) matrices." << endl;
-			cout << "Input C to cancel the program. " << endl;
+			cout << "Input C to cancel. " << endl;
 			cin >> order;
 
 			switch (order[0])
@@ -201,7 +187,12 @@ int main()
 				}();
 				break;
 
+			case 'C':
+				system("cls");
+				break;
 			default:
+				system("cls");
+				cout << "Unknown order, check your input." << endl;
 				break;
 			}
 
@@ -217,114 +208,114 @@ int main()
 
 //original_direction  1 = from_north, 2 = from_east, 3 = from_south, 4 = from_west, 0 = start
 //this function has been abandoned because of stack overflow
-void moveBlock(Grid& grid, int original_direction) {
-	if (grid.get_blank_one() == nullptr)
-		return;
-	if (grid.if_pt_bottom_right()) {
-		grid.compute_hash();
-		if (grid_map.find(grid.get_hash()) != grid_map.end()) {
-			r_num++;
-
-			if (!if_step)
-				if_step = true;
-			else {
-				if_step = false;
-				check_step = true;
-				repeat_step = 0;
-			}
-				
-			//cout << "Repeat" << endl;
-			//grid.show_grid();
-			
-		}
-		else
-		{
-			num++;
-
-			if_step = false;
-			check_step = false;
-			step.clear();
-
-			//grid.show_grid();
-			grid_map[grid.get_hash()] = grid;
-		}
-
-		cout << "Grid good: " << num << endl;
-		cout << "Grid repeat: " << r_num << endl;
-
-		if (original_direction != 0)
-		{
-			delete &grid;
-			return;
-		}
-	}
-
-	//cout << grid.get_blank_x() << endl;
-	//cout << grid.get_blank_y() << endl;
-	//grid.show_grid();
-
-	//east
-	if (grid.get_blank_x() < grid.get_length() - 1 && original_direction != 4 ) {
-		if (!check_step || step[repeat_step] != 4) {
-			Grid* temp = new Grid();
-			temp->set_value(grid);
-			temp->move_east();
-			if (if_step)
-				step.push_back(4);
-
-			cout << "east" << endl;
-			moveBlock(*temp, 2);
-		}
-	}
-
-	//west
-	if (grid.get_blank_x() > 0 && original_direction != 2) {
-		if (!check_step || step[repeat_step] != 2) {
-			Grid* temp = new Grid();
-			temp->set_value(grid);
-			temp->move_west();
-			if (if_step)
-				step.push_back(2);
-
-			cout << "west" << endl;
-			moveBlock(*temp, 4);
-		}
-		
-	}
-
-	//south
-	if (grid.get_blank_y() < grid.get_length() - 1 && original_direction != 3) {
-		if (!check_step || step[repeat_step] != 3) {
-			Grid* temp = new Grid();
-			temp->set_value(grid);
-			temp->move_south();
-
-			if (if_step)
-				step.push_back(3);
-
-
-			cout << "south" << endl;
-			moveBlock(*temp, 1);
-		}
-		
-	}
-
-	//north
-	if (grid.get_blank_y() > 0 && original_direction != 1) {
-		if (!check_step || step[repeat_step] != 1) {
-			Grid* temp = new Grid();
-			temp->set_value(grid);
-			temp->move_north();
-
-			if (if_step)
-				step.push_back(1);
-
-			cout << "north" << endl;
-			moveBlock(*temp, 3);
-		}
-		
-	}
-}
+//void moveBlock(Grid& grid, int original_direction) {
+//	if (grid.get_blank_one() == nullptr)
+//		return;
+//	if (grid.if_pt_bottom_right()) {
+//		grid.compute_hash();
+//		if (grid_map.find(grid.get_hash()) != grid_map.end()) {
+//			r_num++;
+//
+//			if (!if_step)
+//				if_step = true;
+//			else {
+//				if_step = false;
+//				check_step = true;
+//				repeat_step = 0;
+//			}
+//				
+//			//cout << "Repeat" << endl;
+//			//grid.show_grid();
+//			
+//		}
+//		else
+//		{
+//			num++;
+//
+//			if_step = false;
+//			check_step = false;
+//			step.clear();
+//
+//			//grid.show_grid();
+//			grid_map[grid.get_hash()] = grid;
+//		}
+//
+//		cout << "Grid good: " << num << endl;
+//		cout << "Grid repeat: " << r_num << endl;
+//
+//		if (original_direction != 0)
+//		{
+//			delete &grid;
+//			return;
+//		}
+//	}
+//
+//	//cout << grid.get_blank_x() << endl;
+//	//cout << grid.get_blank_y() << endl;
+//	//grid.show_grid();
+//
+//	//east
+//	if (grid.get_blank_x() < grid.get_length() - 1 && original_direction != 4 ) {
+//		if (!check_step || step[repeat_step] != 4) {
+//			Grid* temp = new Grid();
+//			temp->set_value(grid);
+//			temp->move_east();
+//			if (if_step)
+//				step.push_back(4);
+//
+//			cout << "east" << endl;
+//			moveBlock(*temp, 2);
+//		}
+//	}
+//
+//	//west
+//	if (grid.get_blank_x() > 0 && original_direction != 2) {
+//		if (!check_step || step[repeat_step] != 2) {
+//			Grid* temp = new Grid();
+//			temp->set_value(grid);
+//			temp->move_west();
+//			if (if_step)
+//				step.push_back(2);
+//
+//			cout << "west" << endl;
+//			moveBlock(*temp, 4);
+//		}
+//		
+//	}
+//
+//	//south
+//	if (grid.get_blank_y() < grid.get_length() - 1 && original_direction != 3) {
+//		if (!check_step || step[repeat_step] != 3) {
+//			Grid* temp = new Grid();
+//			temp->set_value(grid);
+//			temp->move_south();
+//
+//			if (if_step)
+//				step.push_back(3);
+//
+//
+//			cout << "south" << endl;
+//			moveBlock(*temp, 1);
+//		}
+//		
+//	}
+//
+//	//north
+//	if (grid.get_blank_y() > 0 && original_direction != 1) {
+//		if (!check_step || step[repeat_step] != 1) {
+//			Grid* temp = new Grid();
+//			temp->set_value(grid);
+//			temp->move_north();
+//
+//			if (if_step)
+//				step.push_back(1);
+//
+//			cout << "north" << endl;
+//			moveBlock(*temp, 3);
+//		}
+//		
+//	}
+//}
 
 
 //get result directly by a certain formula if matrix is or over 4x4
@@ -333,11 +324,6 @@ void moveBlockBFS(Grid& grid) {
 	if (grid.get_length() > 3) {
 		return;
 	}
-
-	continuous_row = 0;
-	continuous_column = 0;
-	reversed_c_row = 0;
-	reversed_c_column = 0;
 
 	grid_map.clear();
 	reachedgrid_map.clear();
@@ -478,8 +464,6 @@ void moveBlockBFS(Grid& grid) {
 		}
 	}
 	system("cls");
-	//cout << "Reachable " << grid_map.size() <<"."<< endl;
-
 }
 
 string lltos(long long t)
