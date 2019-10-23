@@ -7,7 +7,6 @@ class TextHandle4 :
 {
 public:
 	bool input_new_grid();
-	bool random_create();
 	TextHandle4();
 };
 

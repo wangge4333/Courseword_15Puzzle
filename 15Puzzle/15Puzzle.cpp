@@ -211,7 +211,7 @@ int main()
 //void moveBlock(Grid& grid, int original_direction) {
 //	if (grid.get_blank_one() == nullptr)
 //		return;
-//	if (grid.if_pt_bottom_right()) {
+//	if (grid.is_pt_bottom_right()) {
 //		grid.compute_hash();
 //		if (grid_map.find(grid.get_hash()) != grid_map.end()) {
 //			r_num++;
@@ -348,7 +348,7 @@ void moveBlockBFS(Grid& grid) {
 
 			if (reachedgrid_map.find(next_grid.get_hash()) == reachedgrid_map.end()) {
 
-				if (next_grid.if_pt_bottom_right())
+				if (next_grid.is_pt_bottom_right())
 				{
 					if (grid_map.find(next_grid.get_hash()) != grid_map.end()) {
 						
@@ -376,7 +376,7 @@ void moveBlockBFS(Grid& grid) {
 			next_grid = current_grid.move_south_bfs();
 			if (reachedgrid_map.find(next_grid.get_hash()) == reachedgrid_map.end()) {
 				
-				if (next_grid.if_pt_bottom_right())
+				if (next_grid.is_pt_bottom_right())
 				{
 					if (grid_map.find(next_grid.get_hash()) != grid_map.end()) {
 						
@@ -404,7 +404,7 @@ void moveBlockBFS(Grid& grid) {
 			next_grid = current_grid.move_west_bfs();
 			if (reachedgrid_map.find(next_grid.get_hash()) == reachedgrid_map.end()) {
 				
-				if (next_grid.if_pt_bottom_right())
+				if (next_grid.is_pt_bottom_right())
 				{
 					if (grid_map.find(next_grid.get_hash()) != grid_map.end()) {
 						 
@@ -432,7 +432,7 @@ void moveBlockBFS(Grid& grid) {
 			next_grid = current_grid.move_east_bfs();
 			if (reachedgrid_map.find(next_grid.get_hash()) == reachedgrid_map.end()) {
 				
-				if (next_grid.if_pt_bottom_right())
+				if (next_grid.is_pt_bottom_right())
 				{
 					if (grid_map.find(next_grid.get_hash()) != grid_map.end()) {
 
@@ -518,9 +518,10 @@ string get_result_str(Grid& grid) {
 unsigned long long check_continuous_row(unsigned long long partial) {
 	int length = grid_map.begin()->second.get_length();
 	unsigned long long sum = 0;
+	int finish_rate = 0;
 
 	for (unordered_map<string, Grid>::iterator iter = grid_map.begin(); iter != grid_map.end(); iter++) {
-		
+		finish_rate++;
 		vector<int> temp_row;
 		for (int i = 0; i < length; i++) {
 			for (int j = 0; j < length; j++) {
@@ -540,6 +541,15 @@ unsigned long long check_continuous_row(unsigned long long partial) {
 			}
 			temp_row.clear();
 		}
+
+		if ((finish_rate % 90) == 0) {
+			system("cls");
+			cout << "Checking...";
+			if (length == 3)
+				cout << "\n Now " << fixed << setprecision(2) << ((float)finish_rate / (float)grid_map.size()) * 100.0 << "%" << endl;
+		}
+		
+
 	}
 
 	return sum;

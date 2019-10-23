@@ -25,7 +25,7 @@ public:
 	Grid();
 
 	int get_length() { return length; };
-	void set_length(int ini_length) { length = ini_length; };
+	void set_length(int new_length);
 
 	void set_value(vector<int> grids_value);
 	void set_value(Grid n_grid);
@@ -46,7 +46,7 @@ public:
 	void show_grid();
 	string get_grid();
 	void compute_hash();
-	bool if_pt_bottom_right();
+	bool is_pt_bottom_right();
 
 	bool if_north_valid() { return blank_y_pos > 0; };
 	bool if_south_valid() { return blank_y_pos < length - 1; };

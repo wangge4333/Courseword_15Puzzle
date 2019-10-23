@@ -7,7 +7,6 @@ class TextHandle9 :
 {
 public:
 	bool input_new_grid();
-	bool random_create();
 	TextHandle9();
 
 };

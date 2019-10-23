@@ -211,7 +211,7 @@ bool TextHandle::random_create() {
 
 	random_device rd;
 	default_random_engine random_num(rd());
-	uniform_int_distribution<int> random_num_dis(1, 20);
+	uniform_int_distribution<int> random_num_dis(1, grid_length * (grid_length + 1));
 
 	for (counter = 0; counter < grid_length * grid_length - 1;) {
 		int temp = random_num_dis(random_num);
