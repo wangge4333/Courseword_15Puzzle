@@ -14,7 +14,7 @@ protected:
 
 	//void initialize_direct();
 
-	long long hash;
+	string hash = "";
 
 	int blank_x_pos = 0;
 	int blank_y_pos = 0;
@@ -30,7 +30,7 @@ public:
 	void set_value(vector<int> grids_value);
 	void set_value(Grid n_grid);
 
-	long long get_hash() { return hash; };
+	string get_hash() { return hash; };
 	int get_blank_x() { return blank_x_pos; };
 	int get_blank_y() { return blank_y_pos; };
 
@@ -44,6 +44,7 @@ public:
 
 	//Others
 	void show_grid();
+	string get_grid();
 	void compute_hash();
 	bool if_pt_bottom_right();
 

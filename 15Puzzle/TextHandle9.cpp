@@ -77,3 +77,44 @@ bool TextHandle9::input_new_grid() {
 	write_in_file();
 	return true;
 }
+
+bool TextHandle9::random_create() {
+	vector<int> new_grid;
+	int counter = 0;
+
+	default_random_engine random_num;
+	uniform_int_distribution<unsigned> random_num_dis(1, 11);
+
+	for (counter = 0; counter < grid_length * grid_length - 1;) {
+		int temp = random_num_dis(random_num);
+		if (check_if_not_exist(new_grid, temp)) {
+			new_grid.push_back(temp);
+			counter++;
+		}
+	}
+
+	if (number_of_grid != 0) {
+		vector<int>* temp_grids = new vector<int>[number_of_grid];
+		for (int i = 0; i < number_of_grid; i++) {
+			temp_grids[i] = grids[i];
+		}
+
+		number_of_grid++;
+		delete[] grids;
+
+		grids = new vector<int>[number_of_grid];
+		for (int i = 0; i < number_of_grid - 1; i++) {
+			grids[i] = temp_grids[i];
+		}
+		grids[number_of_grid - 1] = new_grid;
+	}
+	else
+	{
+		number_of_grid++;
+		grids = new vector<int>[number_of_grid];
+		grids[0] = new_grid;
+	}
+
+	write_in_file();
+	return true;
+}

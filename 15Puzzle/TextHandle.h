@@ -4,9 +4,12 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <random>
 
 using namespace std;
 
+
+//This is a class to handle and manage the orginal data of 4x4 matrices
 class TextHandle
 {
 protected:
@@ -22,15 +25,21 @@ public:
 	TextHandle(int length);
 	virtual ~TextHandle() {};
 
+	//check the file is valid
+	bool is_file_valid = false;
+
 	//Import matrix from files
 	virtual void get_info_from_text();
 	virtual int get_grid_number() { return number_of_grid; };
-	virtual void split_string();
+	virtual bool split_string();
 
 	//Input matrix manually
-	//void check_grid_number();
 	virtual bool input_new_grid();
 	virtual void write_in_file();
+
+	//Randomly create matrix
+	virtual bool random_create();
+	virtual bool check_if_not_exist(vector<int> grid, int wait_checked_num);
 
 	//Others
 	//void show_all_grids();

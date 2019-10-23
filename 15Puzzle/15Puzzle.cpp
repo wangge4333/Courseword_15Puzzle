@@ -10,24 +10,39 @@
 #include <unordered_map>
 #include <queue>
 #include <map>
+#include <stdlib.h>
+#include <sstream>
+#include <iomanip>
 
 using namespace std;
 
 void moveBlock(Grid& grid, int original_direction);
 void moveBlockBFS(Grid& grid);
-void checkGrid(Grid grid);
+string get_result_str(Grid& grid);
+unsigned long long check_continuous_row(unsigned long long partial);
+unsigned long long compute_continuous(Grid& grid, unsigned long long partial);
+unsigned long long check_continuous_c(Grid& grid, unsigned long long partial);
+void bubbleSort(vector<int>& SplitedInt);
+string lltos(long long t);
 
+//these for matrix under 4x4
+unsigned long long continuous_row = 0;
+unsigned long long continuous_column = 0;
+unsigned long long reversed_c_row = 0;
+unsigned long long reversed_c_column = 0;
+
+unsigned long long tot_r_c_this = 0;
+unsigned long long tot_r_c_all = 0;
 
 int num = 0;
 int r_num = 0;
 
-void temp_check(Grid grid, long long temp_hash);
 
-int continuous_row = 0;
 
-unordered_map<long long, Grid> grid_map;
-unordered_map<long long, Grid> reachedgrid_map;
+unordered_map<string, Grid> grid_map;
+unordered_map<string, Grid> reachedgrid_map;
 
+//work for recursion
 vector<int> step;							//1 = north, 2 = west, 3 = south, 4 = east
 bool if_step = false;
 bool check_step = false;
@@ -35,63 +50,173 @@ int repeat_step = 0;
 
 int main()
 {
-	TextHandle* text_handle = new TextHandle9();
 	string order = "";
-	int int_order = 0;
+	int cursor = 0;
+	TextHandle* text_handle = nullptr;
 
-	Grid* grids = new Grid[text_handle->get_grid_number()];
+	while (order[0] != 'E') {
+		order = "";
+		system("cls");
+		cout << "What length of matrices do you want to use?" << endl;
+		cout << "Input 2 for 2x2, 3 for 3x3, 4 for 4x4." << endl;
+		if (text_handle != nullptr) {
+			delete text_handle;
+			text_handle = nullptr;
+		}
 
+		cin >> cursor;
+		switch (cursor)
+		{
+		case 2:
+			text_handle = new TextHandle4();
+			break;
 
-	for (int i = 0; i < text_handle->get_grid_number(); i++) {
-		grids[i].set_length(text_handle->get_length());                 
-;		grids[i].set_value(text_handle->get_vectors()[i]);
-	}
+		case 3:
+			text_handle = new TextHandle9();
+			break;
+
+		case 4:
+			text_handle = new TextHandle();
+			break;
+
+		default:
+			cout << cursor << 'x' << cursor << " matrices is not supported now." << endl;
+			continue;
+		}
+
+		if (!text_handle->is_file_valid) {
+			cout << "Wrong file format or repeative number in matrix.\nCheck and Input again." << endl;
+			continue;
+		}
 		
+		//first level menu end
 
-	while (order != "C")
-	{
-		cout << "Input I to create a new matrix. Input S to show all matrixes. " << endl;
-		cout << "Input O to iterate the matrix." << endl;
-		cout << "Input C to cancel the program. " << endl;
-		cin >> order;
-		if (order[0] == 'I') {
-			while (text_handle->input_new_grid() == false) {};
-			if(text_handle->get_grid_number()!=0)
-				delete[] grids;
-			grids = new Grid[text_handle->get_grid_number()];
 
-			for (int i = 0; i < text_handle->get_grid_number(); i++) {
-				grids[i].set_value(text_handle->get_vectors()[i]);
-			}
+		Grid* grids = new Grid[text_handle->get_grid_number()];
 
-			cout << endl;
+
+		for (int i = 0; i < text_handle->get_grid_number(); i++) {
+			grids[i].set_length(text_handle->get_length());
+			grids[i].set_value(text_handle->get_vectors()[i]);
 		}
-		if (order[0] == 'S') {
-			for (int i = 0; i < text_handle->get_grid_number(); i++)
-				grids[i].show_grid();
-			cout << endl;
-		}
-		if (order[0] == 'O') {
-			if (text_handle->get_grid_number() == 0)
-				cout << "No matrix exist!" << endl;
-			else
+		system("cls");
+
+		//2nd level menu
+		while (order[0] != 'C') {
+			cout << "Input Q to create a new matrices. " << endl;
+			cout << "Input W to create new matrices randomly." << endl;
+			cout << "Input E to show any matrix(es)." << endl;
+			cout << "Input R to get the number of continuous row(and partial) matrices." << endl;
+			cout << "Input C to cancel the program. " << endl;
+			cin >> order;
+
+			switch (order[0])
 			{
-				cout << "Which matrix you want to iterate? " << 1 << '~' << text_handle->get_grid_number() << endl;
-				cin >> int_order;
-				int_order--;
-				if (int_order >= text_handle->get_grid_number() || int_order < 0)
-					cout << "Input wrong! Matrix does not exist." << endl;
-				else
-				{
-					moveBlockBFS(grids[int_order]);
-				}
+			case 'Q':
+				[&]() {
+					order = "";
+					system("cls");
+					while (text_handle->input_new_grid() == false) {};
+					if (text_handle->get_grid_number() != 0)
+						delete[] grids;
+					grids = new Grid[text_handle->get_grid_number()];
+
+					for (int i = 0; i < text_handle->get_grid_number(); i++) {
+						grids[i].set_value(text_handle->get_vectors()[i]);
+					}
+					cout << endl;
+				}();
+				break;
+
+			case 'E':
+				[&]() {
+					order = "";
+					system("cls");
+					cout << "Which matrices do you want to print on screen?" << 1 << '~' << text_handle->get_grid_number() << endl;
+					cout << "Input 0 to print all matrices." << endl;
+					cin >> cursor;
+					if (cursor == 0) {
+						for (int i = 0; i < text_handle->get_grid_number(); i++)
+							grids[i].show_grid();
+					}
+					else
+					{
+						cursor--;
+						if (cursor >= text_handle->get_grid_number() || cursor < 0)
+							cout << "Input wrong! matrices does not exist." << endl;
+						else
+						{
+							grids[cursor].show_grid();
+						}
+					}
+					cout << endl;
+				}();
+				break;
+
+			case 'R':
+				[&]() {
+					order = "";
+					if (text_handle->get_grid_number() == 0)
+						cout << "No matrices exist!" << endl;
+					else
+					{
+						cout << "Which matrices do you want to compute? " << 1 << '~' << text_handle->get_grid_number() << endl;
+						cout << "Input 0 for compute all grids." << endl;
+						cin >> cursor;
+						cursor--;
+						if (cursor >= text_handle->get_grid_number() || cursor < -1)
+							cout << "Input wrong! matrices does not exist." << endl;
+						else if (cursor == -1) {
+							string str_wait_out = "";
+							for (int i = 0; i < text_handle->get_grid_number(); i++) {
+								str_wait_out += get_result_str(grids[i]);
+							}
+							system("cls");
+							cout << str_wait_out;
+						}
+						else
+						{
+							system("cls");
+							cout << get_result_str(grids[cursor]);
+						}
+					}
+				}();
+				break;
+
+			case 'W':
+				[&]() {
+					order = "";
+					system("cls");
+					cout << "How many matriceses do you want to create?" << endl;
+					cin >> cursor;
+					for (int i = 0; i < cursor; i++)
+						text_handle->random_create();
+					if (text_handle->get_grid_number() != 0)
+						delete[] grids;
+					grids = new Grid[text_handle->get_grid_number()];
+
+					for (int i = 0; i < text_handle->get_grid_number(); i++) {
+						grids[i].set_value(text_handle->get_vectors()[i]);
+					}
+				}();
+				break;
+
+			default:
+				break;
 			}
+
 		}
 
+		
 	}
+
+	
+
+	
 }
 
 //original_direction  1 = from_north, 2 = from_east, 3 = from_south, 4 = from_west, 0 = start
+//this function has been abandoned because of stack overflow
 void moveBlock(Grid& grid, int original_direction) {
 	if (grid.get_blank_one() == nullptr)
 		return;
@@ -108,9 +233,8 @@ void moveBlock(Grid& grid, int original_direction) {
 				repeat_step = 0;
 			}
 				
-			cout << "Repeat" << endl;
-			grid.show_grid();
-			temp_check(grid, grid.get_hash());
+			//cout << "Repeat" << endl;
+			//grid.show_grid();
 			
 		}
 		else
@@ -121,7 +245,7 @@ void moveBlock(Grid& grid, int original_direction) {
 			check_step = false;
 			step.clear();
 
-			grid.show_grid();
+			//grid.show_grid();
 			grid_map[grid.get_hash()] = grid;
 		}
 
@@ -202,19 +326,33 @@ void moveBlock(Grid& grid, int original_direction) {
 	}
 }
 
+
+//get result directly by a certain formula if matrix is or over 4x4
+//go through all possible turns if matrix is or under 3x3
 void moveBlockBFS(Grid& grid) {
+	if (grid.get_length() > 3) {
+		return;
+	}
+
+	continuous_row = 0;
+	continuous_column = 0;
+	reversed_c_row = 0;
+	reversed_c_column = 0;
+
+	grid_map.clear();
+	reachedgrid_map.clear();
+
 	queue<Grid> wait_grid;
 	Grid current_grid, next_grid;
 
 	wait_grid.push(grid);
 	reachedgrid_map[grid.get_hash()] = grid;
+	grid_map[grid.get_hash()] = grid;
 
 	while (!wait_grid.empty()) {
 
-		grid_map[grid.get_hash()] = grid;
 		current_grid = wait_grid.front();
 
-		//current_grid.show_grid();
 
 		wait_grid.pop();
 
@@ -227,15 +365,15 @@ void moveBlockBFS(Grid& grid) {
 				if (next_grid.if_pt_bottom_right())
 				{
 					if (grid_map.find(next_grid.get_hash()) != grid_map.end()) {
-						r_num++;
-						cout << "Repeat" << endl;
+						
 					}
 						
 					else
 					{
 						grid_map[next_grid.get_hash()] = next_grid;
 						reachedgrid_map[next_grid.get_hash()] = next_grid;
-						next_grid.show_grid();
+						wait_grid.push(next_grid);
+						
 					}
 				}
 				else
@@ -243,7 +381,6 @@ void moveBlockBFS(Grid& grid) {
 					wait_grid.push(next_grid);
 					reachedgrid_map[next_grid.get_hash()] = next_grid;
 
-					//cout << "In reached map: " << reachedgrid_map.size() << endl;
 				}
 			}
 		}
@@ -256,15 +393,15 @@ void moveBlockBFS(Grid& grid) {
 				if (next_grid.if_pt_bottom_right())
 				{
 					if (grid_map.find(next_grid.get_hash()) != grid_map.end()) {
-						r_num++;
-						cout << "Repeat" << endl;
+						
 					}
 						
 					else
 					{
 						grid_map[next_grid.get_hash()] = next_grid;
 						reachedgrid_map[next_grid.get_hash()] = next_grid;
-						next_grid.show_grid();
+						wait_grid.push(next_grid);
+						
 					}
 				}
 				else
@@ -272,7 +409,6 @@ void moveBlockBFS(Grid& grid) {
 					wait_grid.push(next_grid);
 					reachedgrid_map[next_grid.get_hash()] = next_grid;
 
-					//cout << "In reached map: " << reachedgrid_map.size() << endl;
 				}
 			}
 		}
@@ -285,14 +421,14 @@ void moveBlockBFS(Grid& grid) {
 				if (next_grid.if_pt_bottom_right())
 				{
 					if (grid_map.find(next_grid.get_hash()) != grid_map.end()) {
-						r_num++;
-						cout << "Repeat" << endl; 
+						 
 					}
 					else
 					{
 						grid_map[next_grid.get_hash()] = next_grid;
 						reachedgrid_map[next_grid.get_hash()] = next_grid;
-						next_grid.show_grid();
+						wait_grid.push(next_grid);
+						
 					}
 				}
 				else
@@ -300,7 +436,6 @@ void moveBlockBFS(Grid& grid) {
 					wait_grid.push(next_grid);
 					reachedgrid_map[next_grid.get_hash()] = next_grid;
 
-					//cout << "In reached map: " << reachedgrid_map.size() << endl;
 				}
 			}
 			
@@ -314,15 +449,14 @@ void moveBlockBFS(Grid& grid) {
 				if (next_grid.if_pt_bottom_right())
 				{
 					if (grid_map.find(next_grid.get_hash()) != grid_map.end()) {
-						r_num++;
-						cout << "Repeat" << endl;
 
 					}
 					else
 					{
 						grid_map[next_grid.get_hash()] = next_grid;
 						reachedgrid_map[next_grid.get_hash()] = next_grid;
-						next_grid.show_grid();
+						wait_grid.push(next_grid);
+						
 					}
 				}
 				else
@@ -330,46 +464,245 @@ void moveBlockBFS(Grid& grid) {
 					wait_grid.push(next_grid);
 					reachedgrid_map[next_grid.get_hash()] = next_grid;
 
-					//cout << "In reached map: " << reachedgrid_map.size() << endl;
 				}
 			}
 		}
-
-		cout << "Now " << grid_map.size() << "." << endl;
-
+		
+		if (grid_map.size() % 90 == 0) {
+			system("cls");
+			cout << "Computing...";
+			if (grid.get_length() == 3)
+				cout << "\n Now " << fixed << setprecision(2) << ((float)grid_map.size() / (float)20160) * 100.0 << "%" << endl;
+			if(grid.get_length()==2)
+				cout << "\n Now " << fixed << setprecision(2) << ((float)grid_map.size() / (float)3) * 100.0 << "%" << endl;
+		}
 	}
-
-	
-
-	cout << "Reachable " << grid_map.size() <<"."<< endl;
-	cout << "Total " << reachedgrid_map.size() << "." << endl;
-	cout << "Repeat " << r_num << endl;
-	grid_map.clear();
-	reachedgrid_map.clear();
+	system("cls");
+	//cout << "Reachable " << grid_map.size() <<"."<< endl;
 
 }
 
-
-
-void checkGrid(Grid grid) {
-
+string lltos(long long t)
+{
+	string result;
+	stringstream temp;
+	temp << t;
+	temp >> result;
+	return result;
 }
 
-void temp_check(Grid grid,long long temp_hash) {
-	Grid temp_grid = grid_map[temp_hash];
-	bool flag = true;
-	for (int i = 0; i < grid.get_length(); i++)
-		for (int j = 0; j < grid.get_length(); j++)
-			if (grid.get_one_value(i, j) != temp_grid.get_one_value(i, j))
-				flag = false;
+//to get the string which need to output
+string get_result_str(Grid& grid) {
 
-	if (flag == false) {
-		cout << "Bad" << endl;
-		system("pause");
+	string temp = "";
+
+	if (grid.get_length() < 4) {
+		moveBlockBFS(grid);
+		temp += grid.get_grid();
+		temp = temp + "row = " + lltos(check_continuous_row(grid.get_length()));
+		temp = temp + "\ncolumn = " + lltos(check_continuous_row(grid.get_length()));
+		temp = temp + "\nreversed row = " + lltos(check_continuous_row(grid.get_length()));
+		temp = temp + "\nreversed column = " + lltos(check_continuous_row(grid.get_length())) + '\n';
+		temp = temp + " \n(total for row & column, including reverse, in this configuration) ";
+		for (int i = 2; i <= grid.get_length(); i++)
+			temp = temp + '\n' + lltos(i) + " = " + lltos(check_continuous_c(grid, i));
+		temp = temp + " \n(total for row and column, including reverse, for all valid turns)  ";
+		for (int i = 2; i <= grid.get_length(); i++)
+			temp = temp + '\n' + lltos(i) + " = " + lltos(check_continuous_row(i) * 4);
+		temp += "\n\n";
 	}
 	else
-		cout << "good" << endl;
+	{
+		temp += grid.get_grid();
+		temp = temp + "row = " + lltos(compute_continuous(grid, grid.get_length()));
+		temp = temp + "\ncolumn = " + lltos(compute_continuous(grid, grid.get_length()));
+		temp = temp + "\nreversed row = " + lltos(compute_continuous(grid, grid.get_length()));
+		temp = temp + "\nreversed column = " + lltos(compute_continuous(grid, grid.get_length())) + '\n';
+		temp = temp + " \n(total for row & column, including reverse, in this configuration) ";
+		for (int i = 2; i <= grid.get_length(); i++)
+			temp = temp + '\n' + lltos(i) + " = " + lltos(check_continuous_c(grid, i));
+		temp = temp + " \n(total for row and column, including reverse, for all valid turns)  ";
+		for (int i = 2; i <= grid.get_length(); i++)
+			temp = temp + '\n' + lltos(i) + " = " + lltos(compute_continuous(grid, i) * 4);
+		temp += "\n\n";
+	}
+	
+	return temp;
 }
+
+//only for 3x3 matrix or under 3x3
+unsigned long long check_continuous_row(unsigned long long partial) {
+	int length = grid_map.begin()->second.get_length();
+	unsigned long long sum = 0;
+
+	for (unordered_map<string, Grid>::iterator iter = grid_map.begin(); iter != grid_map.end(); iter++) {
+		
+		vector<int> temp_row;
+		for (int i = 0; i < length; i++) {
+			for (int j = 0; j < length; j++) {
+				temp_row.push_back(iter->second.get_one_value(i, j));
+			}
+			vector<int> buffer;
+
+			for (int j = 0; j < length; j++) {
+				buffer.push_back(temp_row[j]);
+				if (j == (temp_row.size() - 1) || temp_row[j] != (temp_row[j + 1] - 1)) {
+					if (partial <= buffer.size()) {
+						sum += buffer.size() - partial + 1;
+					}
+					buffer.clear();
+				}
+					
+			}
+			temp_row.clear();
+		}
+	}
+
+	return sum;
+
+	//this green code is orginal test code, then I found those 4 numbers are always same, so we can only compute 1 number
+	/*if (length == 3) {
+		for (int i = 0; i < length; i++) {
+			if ((grid.get_one_value(i, 2) - 2) == (grid.get_one_value(i, 0)) && (grid.get_one_value(i, 1) - 1) == (grid.get_one_value(i, 0)))
+				continuous_row++;
+			if ((grid.get_one_value(2, i) - 2) == (grid.get_one_value(0, i)) && (grid.get_one_value(1, i) - 1) == (grid.get_one_value(0, i)))
+				continuous_column++;
+			if (grid.get_one_value(i, 2) != 0 && (grid.get_one_value(i, 2) + 2) == (grid.get_one_value(i, 0)) && (grid.get_one_value(i, 1) + 1) == (grid.get_one_value(i, 0)))
+				reversed_c_row++;
+			if (grid.get_one_value(2, i) != 0 && (grid.get_one_value(2, i) + 2) == (grid.get_one_value(0, i)) && (grid.get_one_value(1, i) + 1) == (grid.get_one_value(0, i)))
+				reversed_c_column++;
+		}
+	}*/
+	
+
+
+
+}
+
+//only for check continuous row/column/reverse row/reverse column in current matrix
+unsigned long long check_continuous_c(Grid& grid, unsigned long long partial) {
+	vector<int> temp_row;
+	vector<int> temp_column;
+	long long temp = 0;
+
+	for (int i = 0; i < grid.get_length(); i++) {
+		for (int j = 0; j < grid.get_length(); j++) {
+			if (grid.get_one_value(i, j) != 0)
+				temp_row.push_back(grid.get_one_value(i, j));
+			if (grid.get_one_value(j, i) != 0)
+				temp_column.push_back(grid.get_one_value(j, i));
+		}
+
+		vector<int> buffer_continuous;
+		vector<int> buffer_reverse;
+
+		for (int x = 0; x < temp_row.size(); x++) {
+			buffer_continuous.push_back(temp_row[x]);
+			buffer_reverse.push_back(temp_row[x]);
+
+			if (x == (temp_row.size() - 1) || temp_row[x] != (temp_row[x + 1] - 1)) {
+				if (partial <= buffer_continuous.size()) {
+					temp = temp + buffer_continuous.size() - partial + 1;
+				}
+				buffer_continuous.clear();
+			}
+
+			if (x == (temp_row.size() - 1) || temp_row[x] != (temp_row[x + 1] + 1)) {
+				if (partial <= buffer_reverse.size()) {
+					temp = temp + buffer_reverse.size() - partial + 1;
+				}
+				buffer_reverse.clear();
+			}
+		}
+
+		buffer_continuous.clear();
+		buffer_reverse.clear();
+
+		for (int x = 0; x < temp_column.size(); x++) {
+			buffer_continuous.push_back(temp_column[x]);
+			buffer_reverse.push_back(temp_column[x]);
+			if (x == (temp_column.size() - 1) || temp_column[x] != (temp_column[x + 1] - 1)) {
+				if (partial <= buffer_continuous.size()) {
+					temp = temp + buffer_continuous.size() - partial + 1;
+				}
+				buffer_continuous.clear();
+			}
+
+			if (x == (temp_column.size() - 1) || temp_column[x] != (temp_column[x + 1] + 1)) {
+				if (partial <= buffer_reverse.size()) {
+					temp = temp + buffer_reverse.size() - partial + 1;
+				}
+				buffer_reverse.clear();
+			}
+		}
+		temp_row.clear();
+		temp_column.clear();
+
+	}
+
+	return temp;
+		
+}
+
+//return the number of continuous row/column/reverse row/reverse column in possible turns, these 4 numbers are same
+unsigned long long compute_continuous(Grid& grid, unsigned long long partial) {
+	//get result directly by a certain formula if matrix is or over 4x4
+	if (partial > grid.get_length())
+		return 0;
+
+	unsigned long long poss_con_r = 0;			//this is the number of possible continuous row in this matrix, like  in 1,2,3,4,5, there are 1,2,3,4 and 2,3,4,5 for partial 4
+	unsigned long long result = 1;
+	unsigned long long poss_pos = 0;			//this is the number of possible positions of the continuous row(column) might appear
+
+	poss_pos = ((unsigned long long)grid.get_length() - partial + 1) * ((unsigned long long)grid.get_length() - 1)
+		+ ((unsigned long long)grid.get_length() - partial);
+
+	vector<int> sorted_matrix;
+	for (int i = 0; i < grid.get_length(); i++) {
+		for (int j = 0; j < grid.get_length(); j++)
+			sorted_matrix.push_back(grid.get_one_value(i, j));
+	}
+
+	sorted_matrix.pop_back();					//delete the 0
+	bubbleSort(sorted_matrix);					//sort the vector to find possible continuous row
+
+	vector<int> temp;
+
+	for (int i = 0; i < sorted_matrix.size(); i++) {
+		temp.push_back(sorted_matrix[i]);
+		if (i == (sorted_matrix.size() - 1) || sorted_matrix[i] != (sorted_matrix[i + 1] - 1)) {
+			if (partial <= temp.size()) {
+				poss_con_r += (temp.size() - partial + 1);
+			}
+			temp.clear();
+		}
+	}
+
+
+	for (int i = 1; i <= sorted_matrix.size() - partial; i++)
+		result *= i;
+
+	result = poss_con_r * result * poss_pos / 2;
+	return result;
+
+}
+
+void bubbleSort(vector<int>& SplitedInt) {
+	int temp;
+	vector<int>::iterator _current;
+	for (int i = 0; i < SplitedInt.size(); i++) {
+		for (_current = SplitedInt.begin(); _current < SplitedInt.end() - i - 1; _current++) {
+			if (*_current > * (_current + 1))
+			{
+				temp = *(_current + 1);
+				*(_current + 1) = *_current;
+				*_current = temp;
+			}
+		}
+	}
+}
+
+
 
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

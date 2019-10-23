@@ -13,7 +13,7 @@ Grid::Grid(vector<int> grids_value, int ini_length) {
 	//initialize_direct();
 }
 
-Grid::Grid(int ini_length):hash(0),length(ini_length) {
+Grid::Grid(int ini_length):hash(""),length(ini_length) {
 
 	all_grid = new Block * [length];
 	for (int i = 0; i < length; i++) {
@@ -22,9 +22,7 @@ Grid::Grid(int ini_length):hash(0),length(ini_length) {
 	}
 }
 
-Grid::Grid():hash(0) {
-
-	length = 3;
+Grid::Grid():hash("") {
 
 	all_grid = new Block * [length];
 	for (int i = 0; i < length; i++) {
@@ -37,6 +35,13 @@ Grid::Grid():hash(0) {
 
 void Grid::set_value(vector<int> grids_value) {
 	grids_value.push_back(0);
+	if (grids_value.size() == 9)
+		length = 3;
+	if (grids_value.size() == 16)
+		length = 4;
+	if (grids_value.size() == 4)
+		length = 2;
+
 
 	for (int i = 0; i < length; i++) {
 		for (int j = 0; j < length; j++) {
@@ -53,6 +58,8 @@ void Grid::set_value(vector<int> grids_value) {
 }
 
 void Grid::set_value(Grid n_grid) {
+
+	length = n_grid.get_length();
 
 	for (int i = 0; i < length; i++) {
 		for (int j = 0; j < length; j++) {
@@ -83,50 +90,63 @@ void Grid::compute_hash() {
 	}
 	hash = tempH * 10000000000 + tempV * 10000 + tl_br * 100 + tr_bl;*/
 
-	long long temp = 0;
+	string temp = "";
 	for (int i = 0; i < length; i++) {
-
 		for (int j = 0; j < length; j++) {
-			temp = temp * 100 + (long long)all_grid[i][j].get_number();
+			string tp_str = "";
+			int tp_int = all_grid[i][j].get_number();
+			tp_str = tp_int;
+			if (tp_int < 10)
+				tp_str = '0' + tp_str;
+
+			temp = temp + tp_str;
 		}
 	}
 	hash = temp;
-
 }
-
-//Grid Grid::operator=(Grid n_grid) {
-//	set_value(n_grid);
-//
-//	return *this;
-//}
-
-
-
-//void Grid::initialize_direct() {
-//	for (int i = 0; i < length; i++) {
-//		for (int j = 0; j < length; j++)
-//		{
-//			if (i > 0)
-//				all_grid[i][j].set_north_block(&all_grid[i - 1][j]);
-//			if (i < length - 1)
-//				all_grid[i][j].set_south_block(&all_grid[i + 1][j]);
-//			if (j > 0)
-//				all_grid[i][j].set_west_block(&all_grid[i][j - 1]);
-//			if (j < length - 1)
-//				all_grid[i][j].set_east_block(&all_grid[i][j + 1]);
-//		}
-//	}
-//}
 
 void Grid::show_grid() {
 	for (int i = 0; i < length; i++)
 	{
-		for (int j = 0; j < length; j++)
-			cout << all_grid[i][j].get_number() << ' ';
+		for (int j = 0; j < length; j++) {
+			int temp = all_grid[i][j].get_number();
+			if (temp > 9) {
+				cout << temp << ' ';
+			}
+				
+			else if (temp > 0 && temp < 10) {
+				cout << ' ' << temp << ' ';
+			}
+				
+		}
 		cout << endl;
 	} 
-	cout << "This grid's hashtag is " << hash << endl;
+	//cout << "This grid's hashtag is " << hash << endl;
 	cout << endl;
+}
+
+string Grid::get_grid() {
+	string out_string = "";
+	char buffer[10] = "";
+	for (int i = 0; i < length; i++)
+	{
+		for (int j = 0; j < length; j++) {
+			int temp = all_grid[i][j].get_number();
+			if (temp > 9) {
+				_itoa_s(temp, buffer, 10);
+				out_string = out_string + buffer + ' ';
+			}
+
+			else if (temp > 0 && temp < 10) {
+				_itoa_s(temp, buffer, 10);
+				out_string = out_string + ' ' + buffer + ' ';
+			}
+
+		}
+		out_string += '\n';
+	}
+	out_string += '\n';
+	return out_string;
 }
 
 bool Grid::if_pt_bottom_right() {
