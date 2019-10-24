@@ -17,7 +17,8 @@ void TextHandle::get_info_from_text() {
 	readFile.open("");
 	
 	while (!readFile) {
-		cout << "Input the file's address, use \\\\ rather than \\ to seperate the folders and file's name. " << endl;
+		cout << "Input the file's address. "<< endl;
+		cout << "Use \\\\ rather than \\ to seperate the folders and file's name. " << endl;
 		cout << "Or input 1 to create a new file." << endl;
 		cin >> fileAddress;
 		if (fileAddress[0] == '1') {
