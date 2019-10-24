@@ -21,6 +21,7 @@ void TextHandle::get_info_from_text() {
 		cout << "Use \\\\ rather than \\ to seperate the folders and file's name. " << endl;
 		cout << "Or input 1 to create a new file." << endl;
 		cin >> fileAddress;
+		string temp_order = "";
 		if (fileAddress[0] == '1') {
 			while (!readFile) {
 				cout << "Input the path where the file you want to create. " << endl;
@@ -29,11 +30,23 @@ void TextHandle::get_info_from_text() {
 				cin >> fileAddress;
 				if (fileAddress[0] == '2')
 					break;
-				ofstream createFile(fileAddress);
-				if (!createFile) {
-					cout << "Failed to create new file! Try it again. " << endl;
+				readFile.open(fileAddress);
+				if (readFile) {
+					cout << "File already exists, do you want to cover it? Y/N" << endl;
+					cin >> temp_order;
+					readFile.close();
+					if (temp_order[0] == 'Y') {
+						ofstream createFile(fileAddress);
+						if (!createFile) {
+							cout << "Failed to create new file! Try it again. " << endl;
+						}
+						createFile.close();
+					}
 				}
-				createFile.close();
+				else {
+					ofstream createFile(fileAddress);
+					createFile.close();
+				}
 
 				readFile.open(fileAddress);
 			}

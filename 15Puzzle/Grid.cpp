@@ -48,8 +48,6 @@ void Grid::set_length(int new_length) {
 void Grid::set_value(vector<int> grids_value) {
 	grids_value.push_back(0);
 
-	cout << length << endl;
-
 	for (int i = 0; i < length; i++) {
 		for (int j = 0; j < length; j++) {
 			all_grid[i][j].set_number(grids_value[i * length + j]);

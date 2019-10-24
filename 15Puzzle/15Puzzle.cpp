@@ -28,6 +28,7 @@ unsigned long long check_continuous_c(Grid& grid, unsigned long long partial);		
 void bubbleSort(vector<int>& SplitedInt);
 string lltos(long long t);
 
+//for 3x3 or 2x2 matrix
 unordered_map<string, Grid> grid_map;
 unordered_map<string, Grid> reachedgrid_map;
 
@@ -45,14 +46,18 @@ int main()
 
 	while (order[0] != 'E') {
 		order = "";
+		int cursor = 0;
+		cin.clear();
 		cout << "Which length of matrices do you want to use? Input E to exit the program. " << endl;
 		cout << "Input 2 for 2x2, 3 for 3x3, 4 for 4x4, etc." << endl;
 		if (text_handle != nullptr) {
 			delete text_handle;
 			text_handle = nullptr;
 		}
+		string temp = "";
+		cin >> temp;
+		cursor = atoi(temp.c_str());
 
-		cin >> cursor;
 		switch (cursor)
 		{
 		case 2:
@@ -93,6 +98,7 @@ int main()
 		}
 		system("cls");
 
+
 		//2nd level menu
 		while (order[0] != 'C') {
 			cout << "Input Q to create a new matrix. " << endl;
@@ -100,6 +106,8 @@ int main()
 			cout << "Input E to show any matrix(es)." << endl;
 			cout << "Input R to get the number of continuous row(and partial) matrices." << endl;
 			cout << "Input C to cancel. " << endl;
+			cin.clear();
+			cursor = 0;
 			cin >> order;
 
 			switch (order[0])
@@ -155,6 +163,7 @@ int main()
 			case 'R':
 				[&]() {
 					order = "";
+					system("cls");
 					if (text_handle->get_grid_number() == 0)
 						cout << "No matrices exist!" << endl;
 					else
@@ -192,6 +201,7 @@ int main()
 					system("cls");
 					cout << "How many matriceses do you want to create?" << endl;
 					cin >> cursor;
+
 					for (int i = 0; i < cursor; i++)
 						text_handle->random_create();
 					if (text_handle->get_grid_number() != 0)
