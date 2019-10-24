@@ -35,6 +35,9 @@ public:
 
 	//Input matrix manually
 	virtual bool input_new_grid();
+
+	//File IO
+	virtual void write_solution_file(string solution);
 	virtual void write_in_file();
 
 	//Randomly create matrix

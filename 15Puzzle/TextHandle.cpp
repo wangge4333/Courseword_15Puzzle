@@ -17,14 +17,34 @@ void TextHandle::get_info_from_text() {
 	readFile.open("");
 	
 	while (!readFile) {
-		cout << "Input the file's address, use \\\\ rather than \\ to seperate the folders. " << endl;
+		cout << "Input the file's address, use \\\\ rather than \\ to seperate the folders and file's name. " << endl;
+		cout << "Or input 1 to create a new file." << endl;
 		cin >> fileAddress;
-		readFile.open(fileAddress);
-		if (!readFile) {
-			cout << "Address wrong, Check it again. " << endl;
-			readFile.close();
+		if (fileAddress[0] == '1') {
+			while (!readFile) {
+				cout << "Input the path where the file you want to create. " << endl;
+				cout << "Use \\\\ rather than \\ to seperate the folders and file's name. " << endl;
+				cout << "Input 2 to cancel. " << endl;
+				cin >> fileAddress;
+				if (fileAddress[0] == '2')
+					break;
+				ofstream createFile(fileAddress);
+				if (!createFile) {
+					cout << "Failed to create new file! Try it again. " << endl;
+				}
+				createFile.close();
+
+				readFile.open(fileAddress);
+			}
 		}
-			
+		else
+		{
+			readFile.open(fileAddress);
+			if (!readFile) {
+				cout << "Address wrong, Check it again. " << endl;
+				readFile.close();
+			}
+		}
 	}
 
 	while (buf && readFile.get(temp))
@@ -252,4 +272,17 @@ bool TextHandle::check_if_not_exist(vector<int> grid, int wait_checked_num) {
 		if (wait_checked_num == grid[i])
 			return false;
 	return true;
+}
+
+void TextHandle::write_solution_file(string solution) {
+	ofstream oFile;
+	oFile.open(fileAddress + "_Solution", ios::app);
+	if (!oFile) {
+		ofstream createFile(fileAddress + "_Solution");
+		createFile.close();
+		oFile.open(fileAddress + "_Solution", ios::app);
+	}
+
+	oFile << solution;
+	oFile.close();
 }

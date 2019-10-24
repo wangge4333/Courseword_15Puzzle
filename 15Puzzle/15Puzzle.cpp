@@ -1,5 +1,7 @@
 // 15Puzzle.cpp : This file contains the 'main' function. Program execution begins and ends there.
-// Done by Ge Wang, Student ID 190082628
+// Written by Ge Wang, Student ID 190082628
+// SolutionFile will be created automaticly at the same folder of the source puzzle file
+
 
 #include <iostream>
 #include "TextHandle.h"
@@ -28,11 +30,11 @@ string lltos(long long t);
 unordered_map<string, Grid> grid_map;
 unordered_map<string, Grid> reachedgrid_map;
 
-//work for recursion
-vector<int> step;							//1 = north, 2 = west, 3 = south, 4 = east
+//work for recursion, has been abandoned
+/*vector<int> step;							//1 = north, 2 = west, 3 = south, 4 = east
 bool if_step = false;
 bool check_step = false;
-int repeat_step = 0;
+int repeat_step = 0;*/
 
 int main()
 {
@@ -42,7 +44,7 @@ int main()
 
 	while (order[0] != 'E') {
 		order = "";
-		cout << "What length of matrices do you want to use? Input E to exit the program. " << endl;
+		cout << "Which length of matrices do you want to use? Input E to exit the program. " << endl;
 		cout << "Input 2 for 2x2, 3 for 3x3, 4 for 4x4." << endl;
 		if (text_handle != nullptr) {
 			delete text_handle;
@@ -158,12 +160,15 @@ int main()
 								str_wait_out += get_result_str(grids[i]);
 							}
 							system("cls");
+							text_handle->write_solution_file(str_wait_out);
 							cout << str_wait_out;
 						}
 						else
 						{
 							system("cls");
-							cout << get_result_str(grids[cursor]);
+							string str_wait_out = get_result_str(grids[cursor]);
+							text_handle->write_solution_file(str_wait_out);
+							cout << str_wait_out;
 						}
 					}
 				}();
@@ -191,6 +196,7 @@ int main()
 				system("cls");
 				break;
 			default:
+				order = "";
 				system("cls");
 				cout << "Unknown order, check your input." << endl;
 				break;
