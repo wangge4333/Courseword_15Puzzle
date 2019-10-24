@@ -1,14 +1,13 @@
-#include "TextHandle9.h"
-
-TextHandle9::TextHandle9():TextHandle(3) {
-	grid_length = 3;
+#include "TextHandle25.h"
+TextHandle25::TextHandle25() :TextHandle(5) {
+	grid_length = 5;
 }
 
-bool TextHandle9::input_new_grid() {
+bool TextHandle25::input_new_grid() {
 	string new_grid_string = "";
 	string temp = "";
 
-	cout << "\nInput a new grid in a correct form, 8 numbers in 1~10, none two of them can be same. " << endl;
+	cout << "\nInput a new grid in a correct form, 4 numbers in 1~30, none two of them can be same. " << endl;
 	cout << "Use ',' to divide every number. " << endl;
 
 	for (int i = 0; i < grid_length; i++) {
@@ -46,7 +45,7 @@ bool TextHandle9::input_new_grid() {
 
 	for (int i = 0; i < grid_length * grid_length - 2; i++)
 		for (int j = i + 1; j < grid_length * grid_length - 1; j++)
-			if (new_grid[i] == new_grid[j] || new_grid[i] > 12 || new_grid[i] < 0) {
+			if (new_grid[i] == new_grid[j] || new_grid[i] > 30 || new_grid[i] < 0) {
 				cout << "You can't input 2 same number in a matrix, or any number not in legal area. " << endl;
 				return false;
 			}

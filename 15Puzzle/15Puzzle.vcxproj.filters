@@ -33,6 +33,9 @@
     <ClCompile Include="TextHandle4.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TextHandle25.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Block.h">
@@ -48,6 +51,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TextHandle4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TextHandle25.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

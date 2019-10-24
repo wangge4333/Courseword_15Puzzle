@@ -1,7 +1,7 @@
 #include "TextHandle4.h"
 
 TextHandle4::TextHandle4() :TextHandle(2) {
-
+	grid_length = 2;
 }
 
 bool TextHandle4::input_new_grid() {

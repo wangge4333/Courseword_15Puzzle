@@ -7,6 +7,7 @@
 #include "TextHandle.h"
 #include "TextHandle9.h"
 #include "TextHandle4.h"
+#include "TextHandle25.h"
 #include "Grid.h"
 #include "Block.h"
 #include <unordered_map>
@@ -45,7 +46,7 @@ int main()
 	while (order[0] != 'E') {
 		order = "";
 		cout << "Which length of matrices do you want to use? Input E to exit the program. " << endl;
-		cout << "Input 2 for 2x2, 3 for 3x3, 4 for 4x4." << endl;
+		cout << "Input 2 for 2x2, 3 for 3x3, 4 for 4x4, etc." << endl;
 		if (text_handle != nullptr) {
 			delete text_handle;
 			text_handle = nullptr;
@@ -66,6 +67,10 @@ int main()
 			text_handle = new TextHandle();
 			break;
 
+		case 5:
+			text_handle = new TextHandle25();
+			break;
+
 		default:
 			cout << cursor << 'x' << cursor << " matrices is not supported now." << endl;
 			continue;
@@ -78,7 +83,6 @@ int main()
 		}
 		
 		//first level menu end
-
 
 		Grid* grids = new Grid[text_handle->get_grid_number()];
 
@@ -120,23 +124,30 @@ int main()
 				[&]() {
 					order = "";
 					system("cls");
-					cout << "Which matrices do you want to print on screen?" << 1 << '~' << text_handle->get_grid_number() << endl;
-					cout << "Input 0 to print all matrices." << endl;
-					cin >> cursor;
-					if (cursor == 0) {
-						for (int i = 0; i < text_handle->get_grid_number(); i++)
-							grids[i].show_grid();
+					if (text_handle->get_grid_number() == 0) {
+						cout << "No matrices exist!" << endl;
 					}
 					else
 					{
-						cursor--;
-						if (cursor >= text_handle->get_grid_number() || cursor < 0)
-							cout << "Input wrong! matrices does not exist." << endl;
+						cout << "Which matrices do you want to print on screen?" << 1 << '~' << text_handle->get_grid_number() << endl;
+						cout << "Input 0 to print all matrices." << endl;
+						cin >> cursor;
+						if (cursor == 0) {
+							for (int i = 0; i < text_handle->get_grid_number(); i++)
+								grids[i].show_grid();
+						}
 						else
 						{
-							grids[cursor].show_grid();
+							cursor--;
+							if (cursor >= text_handle->get_grid_number() || cursor < 0)
+								cout << "Input wrong! matrices does not exist." << endl;
+							else
+							{
+								grids[cursor].show_grid();
+							}
 						}
 					}
+					
 					cout << endl;
 				}();
 				break;
@@ -148,6 +159,7 @@ int main()
 						cout << "No matrices exist!" << endl;
 					else
 					{
+						cout << "SolutionFile will be created automaticly at the same folder of the source puzzle file. " << endl;
 						cout << "Which matrices do you want to compute? " << 1 << '~' << text_handle->get_grid_number() << endl;
 						cout << "Input 0 for compute all grids." << endl;
 						cin >> cursor;
@@ -187,6 +199,7 @@ int main()
 					grids = new Grid[text_handle->get_grid_number()];
 
 					for (int i = 0; i < text_handle->get_grid_number(); i++) {
+						grids[i].set_length(text_handle->get_length());
 						grids[i].set_value(text_handle->get_vectors()[i]);
 					}
 				}();

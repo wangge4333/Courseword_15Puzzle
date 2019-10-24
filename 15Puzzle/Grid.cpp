@@ -47,13 +47,8 @@ void Grid::set_length(int new_length) {
 
 void Grid::set_value(vector<int> grids_value) {
 	grids_value.push_back(0);
-	if (grids_value.size() == 9)
-		length = 3;
-	if (grids_value.size() == 16)
-		length = 4;
-	if (grids_value.size() == 4)
-		length = 2;
 
+	cout << length << endl;
 
 	for (int i = 0; i < length; i++) {
 		for (int j = 0; j < length; j++) {
