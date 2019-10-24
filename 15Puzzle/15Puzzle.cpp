@@ -122,6 +122,7 @@ int main()
 					grids = new Grid[text_handle->get_grid_number()];
 
 					for (int i = 0; i < text_handle->get_grid_number(); i++) {
+						grids[i].set_length(text_handle->get_length());
 						grids[i].set_value(text_handle->get_vectors()[i]);
 					}
 					cout << endl;

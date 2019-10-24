@@ -39,7 +39,7 @@ bool TextHandle4::input_new_grid() {
 		}
 	}
 
-	if (counter < grid_length * grid_length - 1) {
+	if (counter != grid_length * grid_length - 1) {
 		cout << "Illegal grid form, input again. " << endl;
 		return false;
 	}

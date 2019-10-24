@@ -45,6 +45,9 @@ void TextHandle::get_info_from_text() {
 				}
 				else {
 					ofstream createFile(fileAddress);
+					if (!createFile) {
+						cout << "Failed to create new file! Try it again. " << endl;
+					}
 					createFile.close();
 				}
 
